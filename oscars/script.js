@@ -13,9 +13,9 @@ function init2(){
 // Create visual idioms
 
 function createBarChart(data) {
-  const svgWidth = window.innerWidth / 2;
-  const svgHeight = 350;
-  const margin = 70;
+  const svgWidth = window.innerWidth;
+  const svgHeight = window.innerHeight 
+  const margin = 0;
   const xScale = d3
     .scaleLinear()
     .domain([0, 10])

@@ -1,0 +1,47 @@
+#visualization {
+    text-align: center;
+}
+
+.chart-title {
+    font-size: 1.5em;
+    font-family: 'Avenir', sans-serif;
+    font-weight: bold;
+    margin-bottom: 0px;
+    height: 10vh;
+
+}
+
+
+
+.chart-row {
+    display: flex;
+    justify-content: center;
+    flex-wrap: nowrap;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+
+#chart1 {
+    /* Width and height relative to screen size */
+    width: 70vw; /* 30% of the viewport width */
+    height: 50vh;
+    margin: 0px;
+    border: 1px solid #ccc; /* Optional for visual structure */
+}
+#chart2 {
+    /* Width and height relative to screen size */
+    width: 30vw; /* 30% of the viewport width */
+    height: 50vh;
+    margin: 0px;
+    border: 1px solid #ccc; /* Optional for visual structure */
+}
+
+.chart {
+    /* Width and height relative to screen size */
+    width: 33vw; /* 30% of the viewport width */
+    height: 40vh;
+    margin: 0;
+    border: 1px solid #ccc; /* Optional for visual structure */
+}
