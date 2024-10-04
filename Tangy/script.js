@@ -1,3 +1,91 @@
+var globalData;
+
+// Initialization of the dashboard
+
+function init(){
+  d3.csv('projTime.csv').then(function(data) {
+    globalData = data;
+    createScatterPlot(globalData);
+  });
+}
+
+function createScatterPlot(data) {
+    const margin = { top: 10, right: 30, bottom: 20, left: 50 };
+    const svgWidth = window.innerWidth/3 - margin.left - margin.right;
+    const svgHeight = 300- margin.top - margin.bottom;
+    // Create a tooltip div that is hidden by default
+    const tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+    data.forEach(d => {
+      d.length_3d = +d.length_3d;
+      d.moving_time_seconds = +d.moving_time_seconds;
+    });
+  
+    const x = d3.scaleLinear()
+    .domain([0, d3.max(data, d => d.length_3d)]).nice()
+    .range([0, svgWidth]);
+  
+    const y = d3.scaleLinear()
+      .domain([0, d3.max(data, d => d.moving_time_seconds)]).nice()
+      .range([svgHeight, 0]);
+  
+    d3.select(".ScatterPlot")
+        .append("h3")
+        .style("margin-left", `10px`)
+        .text("Relation between hiking time and total length");
+
+    // Create SVG container
+    const svg = d3.select(".ScatterPlot")
+    .append("svg")
+    .attr("width", svgWidth + margin.left + margin.right)
+    .attr("height", svgHeight + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+    // Add X axis
+    svg.append("g")
+      .attr("transform", `translate(0,${svgHeight})`)
+      .call(d3.axisBottom(x))
+      .append("text")
+      .attr("x", svgWidth/2)
+      .attr("y", 20)
+      .attr("fill", "black")
+      .text("Length(meters)");
+  
+    // Add Y axis
+    svg.append("g")
+      .call(d3.axisLeft(y))
+      .append("text")
+      .attr("x", -10)
+      .attr("y", svgHeight/2)
+      //.attr("transform", "rotate(90)")
+      .attr("fill", "black")
+      .text("Moving Time (hours)");
+  
+    // Add the scatterplot points
+    svg.selectAll("circle")
+      .data(data)
+      .enter()
+      .append("circle")
+      .attr("cx", d => x(d.length_3d))
+      .attr("cy", d => y(d.moving_time_seconds))
+      .attr("r", 2.5)
+      .attr("fill", "steelblue")
+      .on("mouseover", (event, d) => {
+          tooltip.transition()
+              .duration(200)
+              .style("opacity", 1);
+          tooltip.html(d.name)
+              .style("left", (event.pageX + 5) + "px")
+              .style("top", (event.pageY - 28) + "px");
+      })
+      .on("mouseout", () => {
+          tooltip.transition()
+              .duration(500)
+              .style("opacity", 0);
+      });
+}
+
 function createChart(chartId, color) {
     // Append SVG to each chart
     d3.select(chartId)

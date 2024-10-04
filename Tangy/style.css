@@ -11,7 +11,16 @@
 
 }
 
-
+.tooltip {
+    position: absolute;
+    text-align: center;
+    width: auto;
+    padding: 5px;
+    background: lightsteelblue;
+    border: 1px solid #333;
+    pointer-events: none;
+    opacity: 0.8;
+}
 
 .chart-row {
     display: flex;
@@ -38,10 +47,20 @@
     border: 1px solid #ccc; /* Optional for visual structure */
 }
 
+
 .chart {
     /* Width and height relative to screen size */
     width: 33vw; /* 30% of the viewport width */
     height: 40vh;
+    margin: 0;
+    border: 1px solid #ccc; /* Optional for visual structure */
+}
+
+.ScatterPlot {
+    /* Width and height relative to screen size */
+    width: 33vw; /* 30% of the viewport width */
+    height: 40vh;
+    display: inline-block;
     margin: 0;
     border: 1px solid #ccc; /* Optional for visual structure */
 }
