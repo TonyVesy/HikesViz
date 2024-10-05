@@ -71,6 +71,8 @@ function createScatterPlot(data) {
       .attr("cy", d => y(d.moving_time_seconds))
       .attr("r", 2.5)
       .attr("fill", "steelblue")
+      .attr("stroke", "black")           // Add stroke color (outline)
+      .attr("stroke-width", 0.01)         // Add stroke width
       .on("mouseover", (event, d) => {
           tooltip.transition()
               .duration(200)
@@ -78,15 +80,27 @@ function createScatterPlot(data) {
           tooltip.html(d.name)
               .style("left", (event.pageX + 5) + "px")
               .style("top", (event.pageY - 28) + "px");
+          // Change fill color and outline on hover
+          d3.select(event.currentTarget) // Select the hovered circle
+          .attr("fill", "green") // Change fill color
+          .attr("stroke", "black")
+          .attr("r",4)   // Change stroke color
+          .attr("stroke-width", 1); // Increase stroke width
       })
       .on("mouseout", () => {
           tooltip.transition()
               .duration(500)
               .style("opacity", 0);
+
+            d3.select(event.currentTarget) // Select the hovered circle
+            .attr("fill", "steelblue") // Reset fill color
+            .attr("stroke", "black")    // Reset stroke color
+            .attr("stroke-width", 0.01) 
+            .attr("r",2.5);  // Reset stroke width
       });
 }
 
-function createChart(chartId, color) {
+function createPseudoChart(chartId, color) {
     // Append SVG to each chart
     d3.select(chartId)
         .append("svg")
