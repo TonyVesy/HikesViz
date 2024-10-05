@@ -81,4 +81,14 @@ body {
   background-color: rgb(255, 255, 255);
 }
 
+#dropdown_container {
+    width: 50%;
+    left:50px;
+    top:40px;
+  }
+  
+.selection {
+    width: 50%;
+}
+
 

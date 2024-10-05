@@ -1,3 +1,24 @@
+function createDropmenu(){
+  var attributes = ['duration','max_elevation','min_elevation','uphill','downhill']
+  // add the options to the button
+  d3.select("#selectButton")
+      .selectAll('myOptions')
+          .data(attributes)
+      .enter()
+          .append('option')
+      .text(function (d) { return d; }) // text showed in the menu
+      .attr("value", function (d) { return d; })
+  // When the button is changed, run the updateChart function
+  d3.select("#selectButton").on("change", function(d) {
+      // recover the option that has been chosen
+      var selectedAttribute = d3.select(this).property("value")
+      // run the updateChart function with this selected option
+      updateScatterplot(selectedAttribute)
+  })
+}
+
+
+
 function createScatterPlot(data,height,width) {
     const margin = { top: 10, right: 30, bottom: 50, left: 50 };
     const svgWidth = width - margin.left - margin.right;
@@ -94,7 +115,34 @@ function createScatterPlot(data,height,width) {
             .attr("stroke-width", 0.01) 
             .attr("r",2.5);  // Reset stroke width
       });
+
+      createDropmenu();
 }
+
+function updateScatterplot(attr){
+  // Create new data with the selection?
+  var dataFilter = data.map(function(d){return {time: d.moving_time_seconds, value:d[attr]} })
+
+  // Give these new data to update line
+  line
+      .datum(dataFilter)
+      .transition()
+      .duration(1000)
+      .attr("d", d3.line()
+        .x(function(d) { return x(+d.moving_time_seconds) })
+        .y(function(d) { return y(+d.value) })
+      )
+  dot
+    .data(dataFilter)
+    .transition()
+    .duration(1000)
+      .attr("cx", function(d) { return x(+d.moving_time_seconds) })
+      .attr("cy", function(d) { return y(+d.value) })
+
+}
+
+
+
 
 
 
