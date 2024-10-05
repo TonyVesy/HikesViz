@@ -6,10 +6,10 @@
     <link rel="stylesheet" href="style.css" />
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <!-- Link to external JS file -->
-    <script src="script.js"></script>
+    <script type="module" src="js/main.js"></script>
     <title>MyHikes</title>
   </head>
-  <body onload="init()">
+  <body >
     <div id="visualization">
         <!-- Title -->
         <h1 id="chart-title">My Hikes</h1>
@@ -17,14 +17,14 @@
         <!-- First row with 2 charts -->
         <div class="chart-row">
             <div class="PseudoMap" id="chart1"></div>
-            <div class="chart" id="chart2"></div>
+            <div class="PseudoPodium" id="chart2"></div>
         </div>
         
         <!-- Second row with 3 charts -->
         <div class="chart-row" >
             <div class="ScatterPlot" id="chart3"></div>
-            <div class="chart" id="chart4"></div>
-            <div class="chart" id="chart5"></div>
+            <div class="PseudoRadar" id="chart4"></div>
+            <div class="PseudoJitter" id="chart5"></div>
         </div>
     </div>
   </body>

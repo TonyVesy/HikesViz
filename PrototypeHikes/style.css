@@ -1,0 +1,84 @@
+
+:root {
+    --MainColor: rgb(2, 101, 62) 
+}
+
+
+#visualization {
+    text-align: center;
+}
+
+html, body {
+    overflow: hidden;
+
+}
+
+
+#chart-title {
+    font-size: 3em;
+    margin-bottom: 0;
+    height: 5vh; /* Adjust as needed */
+    line-height: 3vh; /* Centers text vertically */
+    color: var(--MainColor);
+}
+
+
+.tooltip {
+    position: absolute;
+    text-align: center;
+    width: auto;
+    padding: 5px;
+    background: var(--MainColor);
+    border: 1px solid #333;
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.chart-row {
+    display: flex;
+    justify-content: center;
+    flex-wrap: nowrap;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+
+.PseudoMap {
+    /* Width and height relative to screen size */
+    width: 75vw; /* 70% of the viewport width */
+    height: 50vh;
+    margin: 0px;
+    border: 2px solid rgb(239, 239, 239); 
+}
+.PseudoPodium {
+    /* Width and height relative to screen size */
+    width: 25vw; /* 30% of the viewport width */
+    height: 50vh;
+    margin: 0px;
+    border: 2px solid rgb(239, 239, 239);
+}
+
+
+
+
+.ScatterPlot , .PseudoJitter , .PseudoRadar{
+    /* Width and height relative to screen size */
+    width: 33vw; /* 33% of the viewport width */
+    height: 50vh;
+    display: inline-block;
+    margin: 0;
+    border: 2px solid rgb(239, 239, 239); 
+}
+
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  font-family: Verdana, sans-serif;
+  background-color: rgb(255, 255, 255);
+}
+
+
