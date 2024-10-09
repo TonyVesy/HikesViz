@@ -1,19 +1,22 @@
-function createDropmenu(){
+var dots;
+
+function createDropmenu(hikeData){
   var attributes = ['duration','max_elevation','min_elevation','uphill','downhill']
   // add the options to the button
-  d3.select("#selectButton")
-      .selectAll('myOptions')
+  d3.select("#dropdown_container")
+      .selectAll('option')
           .data(attributes)
       .enter()
           .append('option')
       .text(function (d) { return d; }) // text showed in the menu
       .attr("value", function (d) { return d; })
+      
   // When the button is changed, run the updateChart function
-  d3.select("#selectButton").on("change", function(d) {
+  d3.select("#dropdown_container").on("change", function(d) {
       // recover the option that has been chosen
       var selectedAttribute = d3.select(this).property("value")
       // run the updateChart function with this selected option
-      updateScatterplot(selectedAttribute)
+      updateScatterplot(selectedAttribute,hikeData)
   })
 }
 
@@ -32,12 +35,12 @@ function createScatterPlot(data,height,width) {
       d.moving_time_seconds = +d.moving_time_seconds;
     });
   
-    const x = d3.scaleLinear()
-    .domain([0, d3.max(data, d => d.length_3d)]).nice()
+    var x = d3.scaleLinear()
+    .domain([0, d3.max(data, d => d.length_3d)])
     .range([0, svgWidth]);
   
     const y = d3.scaleLinear()
-      .domain([0, d3.max(data, d => d.moving_time_seconds)]).nice()
+      .domain([0, d3.max(data, d => d.moving_time_seconds)])
       .range([svgHeight, 0]);
   
     d3.select(".ScatterPlot")
@@ -47,7 +50,7 @@ function createScatterPlot(data,height,width) {
         .style("color", "var(--MainColor)");
 
     // Create SVG container
-    const svg = d3.select(".ScatterPlot")
+    var svg = d3.select(".ScatterPlot")
     .append("svg")
     .attr("width", svgWidth + margin.left + margin.right)
     .attr("height", svgHeight + margin.top + margin.bottom)
@@ -58,14 +61,10 @@ function createScatterPlot(data,height,width) {
     const numTicksY = Math.floor(svgHeight / 50);
 
     // Add X axis
-    svg.append("g")
-        .attr("transform", `translate(0,${svgHeight})`)
-        .call(d3.axisBottom(x).ticks(numTicksX)) // Adjust tick count based on width
-        .append("text")
-        .attr("x", svgWidth / 2)
-        .attr("y", 30)
-        .attr("fill", "black")
-        .text("Length (meters)");
+    var xAxis=svg.append("g")
+      .attr("transform", `translate(0,${svgHeight})`)
+      .attr("class" , ".xAxis")
+      .call(d3.axisBottom(x).ticks(numTicksX)); // Adjust tick count based on width
   
     // Add Y axis
     svg.append("g")
@@ -79,7 +78,7 @@ function createScatterPlot(data,height,width) {
       .text("Moving Time (hours)");
   
     // Add the scatterplot points
-    svg.selectAll("circle")
+    dots=svg.selectAll("circle")
       .data(data)
       .enter()
       .append("circle")
@@ -116,33 +115,36 @@ function createScatterPlot(data,height,width) {
             .attr("r",2.5);  // Reset stroke width
       });
 
-      createDropmenu();
+      // update colors based on drop down selection
+    d3.select("#attributeSelector").on("change", function () {
+      // recover the option that has been chosen
+      var selectedAttribute = d3.select(this).property("value")
+      // run the updateChart function with this selected option
+      // Create new data with the selection?
+      var dataFilter = data.map(function(d){return {value:d[selectedAttribute],moving_time_seconds: d.moving_time_seconds} })
+
+
+      const newX = d3.scaleLinear()
+        .domain([0, d3.max(data,d => d.value)]).nice()
+        .range([0, svgWidth]);
+      
+      /*svg.select(".xAxis")
+        .transition()
+        .duration(1000)
+        .call(yAxis);*/
+
+      xAxis.transition().duration(1000).call(d3.axisBottom(newX).ticks(numTicksX))
+      
+      // Give these new data to update line
+      dots
+        .data(dataFilter)
+        .transition()
+        .duration(1000)
+          .attr("cx", function(d) { return x(+d.value)})
+          .attr("cy", function(d) { return y(+d.moving_time_seconds) })
+    
+    });
 }
-
-function updateScatterplot(attr){
-  // Create new data with the selection?
-  var dataFilter = data.map(function(d){return {time: d.moving_time_seconds, value:d[attr]} })
-
-  // Give these new data to update line
-  line
-      .datum(dataFilter)
-      .transition()
-      .duration(1000)
-      .attr("d", d3.line()
-        .x(function(d) { return x(+d.moving_time_seconds) })
-        .y(function(d) { return y(+d.value) })
-      )
-  dot
-    .data(dataFilter)
-    .transition()
-    .duration(1000)
-      .attr("cx", function(d) { return x(+d.moving_time_seconds) })
-      .attr("cy", function(d) { return y(+d.value) })
-
-}
-
-
-
 
 
 
