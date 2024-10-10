@@ -1,19 +1,31 @@
-var dots,xAxis, yAxis, x ,y,svgWidth,svgHeight, tooltip;
+var dots,xAxis, yAxis, x ,y,svgWidth,svgHeight, tooltip, numTicksX, numTicksY, header;
 
 var xVar="length_3d";
 var yVar ="moving_time_hours" 
+
+var labels = {
+  "length_3d": "length(meters)",
+  "duration_hours": "duration",
+  "max_elevation": "max elevation",
+  "min_elevation": "min elevation",
+  "max_elevation": "max elevation",
+  "uphill":"uphill",
+  "downhill":"downhill",
+  "moving_time_hours":"moving time(hours)"
+}
 
 
 
 
 function createScatterPlot(data,height,width) {
-    const margin = { top: 10, right: 30, bottom: 50, left: 50 };
+    const margin = { top: 20, right: 30, bottom: 60, left: 80 };
      svgWidth = width - margin.left - margin.right;
      svgHeight = height- margin.top - margin.bottom;
     // Create a tooltip div that is hidden by default
     tooltip = d3.select("body").append("div")
     .attr("class", "tooltip")
     .style("opacity", 0);
+
     data.forEach(d => {
       d.length_3d = +d.length_3d;
       d.moving_time_hours = +d.moving_time_hours;
@@ -27,7 +39,7 @@ function createScatterPlot(data,height,width) {
       .domain([0, d3.max(data, d => d.moving_time_hours)])
       .range([svgHeight, 0]);
   
-    d3.select(".ScatterPlot")
+    header = d3.select(".ScatterPlot")
         .append("h3")
         .style("margin-left", `10px`)
         .text("Relation between hiking time and total length")
@@ -41,8 +53,8 @@ function createScatterPlot(data,height,width) {
     .append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    const numTicksX = Math.floor(svgWidth / 50); 
-    const numTicksY = Math.floor(svgHeight / 50);
+    numTicksX = Math.floor(svgWidth / 50); 
+    numTicksY = Math.floor(svgHeight / 50);
 
     // Add X axis
     xAxis=svg.append("g")
@@ -52,9 +64,35 @@ function createScatterPlot(data,height,width) {
     // Add Y axis
     yAxis=svg.append("g")
       .call(d3.axisLeft(y).ticks(numTicksY)) // Adjust tick count based on height
-  
-    // Add the scatterplot points
-    dots=svg.selectAll("circle")
+    
+    //create the hike dots
+    createDots(svg,data);
+
+      // update x axis based on drop down selection
+    d3.select("#attributeSelector").on("change", function () {
+      // recover the option that has been chosen
+      var selectedAttribute = d3.select(this).property("value")
+      updateScatterPlotX(selectedAttribute,data);
+    
+    });
+
+    // update y axis based on drop down selection
+    d3.select("#attributeSelectorLeft").on("change", function () {
+      // recover the option that has been chosen
+      var selectedAttribute = d3.select(this).property("value")
+      updateScatterPlotY(selectedAttribute,data);
+    
+    });
+};
+ //THIS IS FOR THE COLOR LEGEND OF POINTS (DIFFICULTY)
+var color = d3.scaleOrdinal()
+    .domain(["t1", "versicolor", "virginica" ])
+    .range([ "#440154ff", "#21908dff", "#fde725ff"])
+
+function createDots(container ,data){
+
+      // Add the scatterplot points
+      dots=container.selectAll("circle")
       .data(data)
       .enter()
       .append("circle")
@@ -63,7 +101,8 @@ function createScatterPlot(data,height,width) {
       .attr("r", 2.5)
       .attr("fill", "var(--MainColor)")  // Add fill color
       .attr("stroke", "black")           // Add stroke color (outline)
-      .attr("stroke-width", 0.01)        
+      .attr("stroke-width", 0.01) 
+      //.style("fill", function (d) { return color(d.Species) } )    FOR LENGEND OF DIFFICULTIES
       .on("mouseover", (event, d) => {
           tooltip.transition()
               .duration(200)
@@ -90,47 +129,35 @@ function createScatterPlot(data,height,width) {
             .attr("stroke-width", 0.01) 
             .attr("r",2.5);  // Reset stroke width
       });
-
-      // update chart based on drop down selection
-    d3.select("#attributeSelector").on("change", function () {
-      // recover the option that has been chosen
-      var selectedAttribute = d3.select(this).property("value")
-      updateScatterPlotX(selectedAttribute,data);
-    
-    });
-
-    d3.select("#attributeSelectorLeft").on("change", function () {
-      // recover the option that has been chosen
-      var selectedAttribute = d3.select(this).property("value")
-      updateScatterPlotY(selectedAttribute,data);
-    
-    });
-};
+}
 
 function updateScatterPlotY(selectedAttribute,data) {
 
-  // run the updateChart function with this selected option
-// Create new data with the selection?
-var dataFilter = data.map(function(d){return {xAxis: d[xVar], value:d[selectedAttribute]} })
+// run the updateChart function with this selected option
 
 
-const newY = d3.scaleLinear()
-  .domain([0, d3.max(data,d => d.value)])
-  .range([svgHeight, 0]);
+data.forEach(d => {
+  d[xVar] = +d[xVar];
+  d[selectedAttribute] = +d[selectedAttribute];
+});
 
+//define new yVar
+yVar=selectedAttribute
 
+//define new y axis domain
+y.domain([0, d3.max(data,d => d[selectedAttribute])])
 
-yAxis.transition().duration(1000).call(d3.axisLeft(newY));
+yAxis.transition().duration(1000).call(d3.axisLeft(y).ticks(numTicksY));
 
-console.log("passei aqui")
+header.transition().transition().duration(2000).duration(1000).text("Relation between "+ labels[selectedAttribute] + " and " +labels[xVar])
 
-// Give these new data to update line
+// Give these new data to update dots
 dots
-  .data(dataFilter)
+  .data(data)
   .transition()
   .duration(1000)
-    .attr("cx", function(d) { return x(+d.xAxis)})
-    .attr("cy", function(d) { return y(+d.value) });
+    .attr("cx", function(d) { return x(+d[xVar])})
+    .attr("cy", function(d) { return y(+d[selectedAttribute]) });
 
 }
 
@@ -138,28 +165,28 @@ dots
 function updateScatterPlotX(selectedAttribute,data) {
 
         // run the updateChart function with this selected option
-      // Create new data with the selection?
-      var dataFilter = data.map(function(d){return {value:d[selectedAttribute],yAxis: d[yVar]} })
+      data.forEach(d => {
+        d[selectedAttribute] = +d[selectedAttribute];
+        d[yVar] = +d[yVar];
+      });
 
+      //define new xVAR
+      xVar=selectedAttribute;
 
-      const newX = d3.scaleLinear()
-        .domain([0, d3.max(data,d => d.value)])
-        .range([0, svgWidth]);
+      //change x axis domain
+      x.domain([d3.min(data,d => d[selectedAttribute]), d3.max(data,d => d[selectedAttribute])]);
 
-      
+      xAxis.transition().duration(1000).call(d3.axisBottom(x).ticks(numTicksX));
 
-      xAxis.transition().duration(1000).call(d3.axisBottom(newX));
+      header.transition().duration(1000).text("Relation between "+ labels[yVar]+ " and " + labels[selectedAttribute])
 
-      console.log("passei aqui")
-      
-      // Give these new data to update line
+      // Give these new data to update dots
       dots
-        .data(dataFilter)
+        .data(data)
         .transition()
         .duration(1000)
-          .attr("cx", function(d) { return x(+d.value)})
-          .attr("cy", function(d) { return y(+d.yAxis) });
-
+          .attr("cx", function(d) { return x(+d[selectedAttribute])})
+          .attr("cy", function(d) { return y(+d[yVar]) });
 }
 
 
