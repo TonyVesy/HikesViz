@@ -1,46 +1,30 @@
-var dots;
+var dots,xAxis, yAxis, x ,y,svgWidth,svgHeight, tooltip;
 
-function createDropmenu(hikeData){
-  var attributes = ['duration','max_elevation','min_elevation','uphill','downhill']
-  // add the options to the button
-  d3.select("#dropdown_container")
-      .selectAll('option')
-          .data(attributes)
-      .enter()
-          .append('option')
-      .text(function (d) { return d; }) // text showed in the menu
-      .attr("value", function (d) { return d; })
-      
-  // When the button is changed, run the updateChart function
-  d3.select("#dropdown_container").on("change", function(d) {
-      // recover the option that has been chosen
-      var selectedAttribute = d3.select(this).property("value")
-      // run the updateChart function with this selected option
-      updateScatterplot(selectedAttribute,hikeData)
-  })
-}
+var xVar="length_3d";
+var yVar ="moving_time_hours" 
+
 
 
 
 function createScatterPlot(data,height,width) {
     const margin = { top: 10, right: 30, bottom: 50, left: 50 };
-    const svgWidth = width - margin.left - margin.right;
-    const svgHeight = height- margin.top - margin.bottom;
+     svgWidth = width - margin.left - margin.right;
+     svgHeight = height- margin.top - margin.bottom;
     // Create a tooltip div that is hidden by default
-    const tooltip = d3.select("body").append("div")
+    tooltip = d3.select("body").append("div")
     .attr("class", "tooltip")
     .style("opacity", 0);
     data.forEach(d => {
       d.length_3d = +d.length_3d;
-      d.moving_time_seconds = +d.moving_time_seconds;
+      d.moving_time_hours = +d.moving_time_hours;
     });
-  
-    var x = d3.scaleLinear()
+
+    x = d3.scaleLinear()
     .domain([0, d3.max(data, d => d.length_3d)])
     .range([0, svgWidth]);
   
-    const y = d3.scaleLinear()
-      .domain([0, d3.max(data, d => d.moving_time_seconds)])
+    y = d3.scaleLinear()
+      .domain([0, d3.max(data, d => d.moving_time_hours)])
       .range([svgHeight, 0]);
   
     d3.select(".ScatterPlot")
@@ -61,21 +45,13 @@ function createScatterPlot(data,height,width) {
     const numTicksY = Math.floor(svgHeight / 50);
 
     // Add X axis
-    var xAxis=svg.append("g")
+    xAxis=svg.append("g")
       .attr("transform", `translate(0,${svgHeight})`)
-      .attr("class" , ".xAxis")
       .call(d3.axisBottom(x).ticks(numTicksX)); // Adjust tick count based on width
-  
+   
     // Add Y axis
-    svg.append("g")
+    yAxis=svg.append("g")
       .call(d3.axisLeft(y).ticks(numTicksY)) // Adjust tick count based on height
-      .append("text")
-      .attr("x", -svgHeight / 2)    // Move the label to the middle of the axis
-      .attr("y", -margin.left + 20)  // Position slightly away from the axis
-      .attr("transform", "rotate(-90)")  // Rotate the label by 90 degrees
-      .attr("text-anchor", "middle")    // Align the text in the center
-      .attr("fill", "black")
-      .text("Moving Time (hours)");
   
     // Add the scatterplot points
     dots=svg.selectAll("circle")
@@ -83,7 +59,7 @@ function createScatterPlot(data,height,width) {
       .enter()
       .append("circle")
       .attr("cx", d => x(d.length_3d))
-      .attr("cy", d => y(d.moving_time_seconds))
+      .attr("cy", d => y(d.moving_time_hours))
       .attr("r", 2.5)
       .attr("fill", "var(--MainColor)")  // Add fill color
       .attr("stroke", "black")           // Add stroke color (outline)
@@ -115,25 +91,66 @@ function createScatterPlot(data,height,width) {
             .attr("r",2.5);  // Reset stroke width
       });
 
-      // update colors based on drop down selection
+      // update chart based on drop down selection
     d3.select("#attributeSelector").on("change", function () {
       // recover the option that has been chosen
       var selectedAttribute = d3.select(this).property("value")
-      // run the updateChart function with this selected option
+      updateScatterPlotX(selectedAttribute,data);
+    
+    });
+
+    d3.select("#attributeSelectorLeft").on("change", function () {
+      // recover the option that has been chosen
+      var selectedAttribute = d3.select(this).property("value")
+      updateScatterPlotY(selectedAttribute,data);
+    
+    });
+};
+
+function updateScatterPlotY(selectedAttribute,data) {
+
+  // run the updateChart function with this selected option
+// Create new data with the selection?
+var dataFilter = data.map(function(d){return {xAxis: d[xVar], value:d[selectedAttribute]} })
+
+
+const newY = d3.scaleLinear()
+  .domain([0, d3.max(data,d => d.value)])
+  .range([svgHeight, 0]);
+
+
+
+yAxis.transition().duration(1000).call(d3.axisLeft(newY));
+
+console.log("passei aqui")
+
+// Give these new data to update line
+dots
+  .data(dataFilter)
+  .transition()
+  .duration(1000)
+    .attr("cx", function(d) { return x(+d.xAxis)})
+    .attr("cy", function(d) { return y(+d.value) });
+
+}
+
+
+function updateScatterPlotX(selectedAttribute,data) {
+
+        // run the updateChart function with this selected option
       // Create new data with the selection?
-      var dataFilter = data.map(function(d){return {value:d[selectedAttribute],moving_time_seconds: d.moving_time_seconds} })
+      var dataFilter = data.map(function(d){return {value:d[selectedAttribute],yAxis: d[yVar]} })
 
 
       const newX = d3.scaleLinear()
-        .domain([0, d3.max(data,d => d.value)]).nice()
+        .domain([0, d3.max(data,d => d.value)])
         .range([0, svgWidth]);
-      
-      /*svg.select(".xAxis")
-        .transition()
-        .duration(1000)
-        .call(yAxis);*/
 
-      xAxis.transition().duration(1000).call(d3.axisBottom(newX).ticks(numTicksX))
+      
+
+      xAxis.transition().duration(1000).call(d3.axisBottom(newX));
+
+      console.log("passei aqui")
       
       // Give these new data to update line
       dots
@@ -141,9 +158,8 @@ function createScatterPlot(data,height,width) {
         .transition()
         .duration(1000)
           .attr("cx", function(d) { return x(+d.value)})
-          .attr("cy", function(d) { return y(+d.moving_time_seconds) })
-    
-    });
+          .attr("cy", function(d) { return y(+d.yAxis) });
+
 }
 
 

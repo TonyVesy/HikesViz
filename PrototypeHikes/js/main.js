@@ -9,7 +9,7 @@ var globalData;
 // Initialization of the dashboard
 
 function init(){
-  d3.csv('Hikes_CP3.csv').then(function(data) {
+  d3.csv('Hikes_CP4.csv').then(function(data) {
     globalData = data;
     createScatterPlot(globalData,window.innerHeight/3,window.innerWidth/3);
     createPseudoMap(globalData, (window.innerHeight/3) *1.5, window.innerWidth *3/4);

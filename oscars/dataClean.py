@@ -2,12 +2,12 @@
 import re
 import pandas as pd
 
-data=pd.read_csv('projData.csv')
+data=pd.read_csv('clean.csv')
 
 def time_to_hours(time_str):
     # Regular expression to match the days, hours, minutes, and seconds
     pattern = r"(?:(\d+)\s+days?)?\s*(\d+):(\d+):(\d+)"
-    match = re.match(pattern, time_str)
+    match = re.match(pattern,time_str)
     
     if match:
         days = int(match.group(1)) if match.group(1) else 0
@@ -20,11 +20,13 @@ def time_to_hours(time_str):
     else:
         return None
 
-# Apply the conversion to the 'moving_time' column
-data['moving_time_seconds'] = data['moving_time'].apply(time_to_hours)
-data['length_3d'] = data['length_3d']*0.3048
+data.dropna(subset=['duration'], inplace=True)
+#Apply the conversion to the 'moving_time' column
+data['moving_time_hours'] = data['moving_time_seconds']
+data['duration_hours'] = data['duration'].apply(time_to_hours)
+
 
 
 # Save the cleaned data to a new CSV file for D3.js
-data.to_csv('projTime.csv')
+data.to_csv('Hikes_CP4.csv')
 
