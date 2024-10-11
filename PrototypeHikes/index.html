@@ -1,53 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="style.css" />
+
+<head>
+    <meta charset="UTF-8">
+    <title>My Hike</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Montserrat:wght@400;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="main.css" />
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <!-- Link to external JS file -->
-    <script type="module" src="js/main.js"></script>
-    <title>MyHikes</title>
-  </head>
-  <body >
-    <div id="visualization">
-        <!-- Title -->
-        <h1 id="chart-title">My Hikes</h1>
-        
-        <!-- First row with 2 charts -->
-        <div class="chart-row">
-            <div class="PseudoMap" id="chart1"></div>
-            <div class="PseudoPodium" id="chart2"></div>
-        </div>
-        
-        <!-- Second row with 3 charts -->
-        <div class="chart-row" >
-            <div class="ScatterPlot" id="chart3">
-              <div class="custom-select">
-                <select id="attributeSelector">
-                  <option value="length_3d">length(meters)</option>
-                  <option value="duration_hours">duration</option>
-                  <option value="max_elevation">max elevation</option>
-                  <option value="min_elevation">min elevation</option>
-                  <option value="uphill">uphill</option>
-                  <option value="downhill">downhill</option>
-                </select>
-              </div> 
-              <div class="custom-select-left">
-                <select id="attributeSelectorLeft">
-                  <option value="moving_time_hours">hiking time(hours)</option>
-                  <option value="length_3d">length(meters)</option>
-                  <option value="duration_hours">duration</option>
-                  <option value="max_elevation">max elevation</option>
-                  <option value="min_elevation">min elevation</option>
-                  <option value="uphill">uphill</option>
-                  <option value="downhill">downhill</option>
-                </select>
-              </div> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="libs\d3.min.js"></script>
+    <script src="main.js" type="module"></script>
+</head>
+
+<body>
+    <div class="Dashboard">
+        <div class="Grid">
+            <div class="Header">
+                <h1 class="Header__Heading">My Hike</h1>
             </div>
-            <div class="PseudoRadar" id="chart4"></div>
-            <div class="PseudoJitter" id="chart5"></div>
+            
+            <div class="Map">
+                <svg class="Map__SVG" ></svg>
+            </div>
+
+            <div class="Filter">
+                    <label for="country-filter">Select Country:</label>
+                       <select id="country-filter"  class="country-select" multiple>
+                       <option value="all">All</option>
+                       <!-- Country options will be populated here -->
+                    </select>
+            </div>
+
+            <div class="Podium">
+                <h3>Podium</h3>
+            </div>
+
+            <div class="Scatter">
+                <svg class="Scatter__SVG">
+                    <div class="custom-select">
+                        <select id="attributeSelector">
+                          <option value="length_3d">length(meters)</option>
+                          <option value="duration_hours">duration</option>
+                          <option value="max_elevation">max elevation</option>
+                          <option value="min_elevation">min elevation</option>
+                          <option value="uphill">uphill</option>
+                          <option value="downhill">downhill</option>
+                        </select>
+                      </div> 
+                      <div class="custom-select-left">
+                        <select id="attributeSelectorLeft">
+                          <option value="moving_time_hours">hiking time(hours)</option>
+                          <option value="length_3d">length(meters)</option>
+                          <option value="duration_hours">duration</option>
+                          <option value="max_elevation">max elevation</option>
+                          <option value="min_elevation">min elevation</option>
+                          <option value="uphill">uphill</option>
+                          <option value="downhill">downhill</option>
+                        </select>
+                    </div> 
+                </svg>
+            </div>
+            <div class="Radar">
+                <svg class="Radar__SVG"></svg>
+            </div>
         </div>
     </div>
-  </body>
+</body>
+
 </html>
