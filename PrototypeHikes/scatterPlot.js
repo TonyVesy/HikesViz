@@ -1,9 +1,14 @@
+import { selectedHike, setSelectedHike,getSelectedHike } from './main.js';
+import { updateRadarPlot } from './radarChart.js';
+
+
 var dots,xAxis,numTicksX,numTicksY , yAxis, x ,y, tooltip, numTicksX, numTicksY, header;
 var xVar = "length_3d";
 var yVar = "moving_time_hours" 
 
+
 function createScatterPlot(data) {
-    const margin = { top: 20, right: 40, bottom: 50, left: 40 };
+    const margin = { top: 25, right: 40, bottom: 60, left: 35 };
 
     // Select the SVG element inside the .Scatter div
     const svg = d3.select(".Scatter__SVG")
@@ -90,17 +95,32 @@ function createDots(container, data){
         .attr("r",4)   // Change stroke color
         .attr("stroke-width", 1); // Increase stroke width
     })
-    .on("mouseout", () => {
+    .on("mouseout", (event,d) => {
         tooltip.transition()
             .duration(500)
             .style("opacity", 0);
 
-          d3.select(event.currentTarget) // Select the hovered circle
-          .attr("fill", "green") // Reset fill color
-          .attr("stroke", "black")    // Reset stroke color
-          .attr("stroke-width", 0.01) 
-          .attr("r",2.5);  // Reset stroke width
+        d3.select(event.currentTarget) // Select the hovered circle
+            .attr("r", d === getSelectedHike() ? 4 : 2.5) // Reset radius based on selection
+            .attr("fill", d === getSelectedHike() ? "red" : "green") // Reset fill color based on selection
+            .attr("stroke", "black")    // Reset stroke color
+            .attr("stroke-width", 0.01) 
+    })
+    .on("click", (event, d) => {
+        setSelectedHike(d); 
+        console.log("Selected hike:", getSelectedHike());
+        updateScatterPlotHighlight();
+        updateRadarPlot();
     });
+}
+function updateScatterPlotHighlight() {
+    dots.attr("fill", d => d === selectedHike ? "red" : "green")
+        .attr("r", d => d === selectedHike ? 4 : 2.5)
+        .each(function(d) {
+            if (d === getSelectedHike()) {
+                d3.select(this).raise(); // Bring the selected dot to the front
+            }
+        });
 }
 
 function updateScatterPlotX(selectedAttribute,data) {

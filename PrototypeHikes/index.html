@@ -23,11 +23,15 @@
             
             <div class="Map">
                 <svg class="Map__SVG" ></svg>
+                <audio controls>
+                    <source src="BloodOnTheMoney.mp3" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                  </audio>
             </div>
 
             <div class="Filter">
-                    <label for="country-filter">Select Country:</label>
-                       <select id="country-filter"  class="country-select" multiple>
+                    <label for="country-filter"></label>
+                       <select id="country-filter"  class="country-select" multiple >
                        <option value="all">All</option>
                        <!-- Country options will be populated here -->
                     </select>
@@ -38,28 +42,28 @@
             </div>
 
             <div class="Scatter">
-                <svg class="Scatter__SVG">
-                    <div class="custom-select">
-                        <select id="attributeSelector">
-                          <option value="length_3d">length(meters)</option>
-                          <option value="duration_hours">duration</option>
-                          <option value="max_elevation">max elevation</option>
-                          <option value="min_elevation">min elevation</option>
-                          <option value="uphill">uphill</option>
-                          <option value="downhill">downhill</option>
-                        </select>
-                      </div> 
-                      <div class="custom-select-left">
-                        <select id="attributeSelectorLeft">
-                          <option value="moving_time_hours">hiking time(hours)</option>
-                          <option value="length_3d">length(meters)</option>
-                          <option value="duration_hours">duration</option>
-                          <option value="max_elevation">max elevation</option>
-                          <option value="min_elevation">min elevation</option>
-                          <option value="uphill">uphill</option>
-                          <option value="downhill">downhill</option>
-                        </select>
-                    </div> 
+                <div class="custom-select">
+                    <select id="attributeSelector">
+                      <option value="length_3d">length(meters)</option>
+                      <option value="duration_hours">duration</option>
+                      <option value="max_elevation">max elevation</option>
+                      <option value="min_elevation">min elevation</option>
+                      <option value="uphill">uphill</option>
+                      <option value="downhill">downhill</option>
+                    </select>
+                  </div> 
+                  <div class="custom-select-left">
+                    <select id="attributeSelectorLeft">
+                      <option value="moving_time_hours">hiking time(hours)</option>
+                      <option value="length_3d">length(meters)</option>
+                      <option value="duration_hours">duration</option>
+                      <option value="max_elevation">max elevation</option>
+                      <option value="min_elevation">min elevation</option>
+                      <option value="uphill">uphill</option>
+                      <option value="downhill">downhill</option>
+                    </select>
+                </div> 
+                <svg class="Scatter__SVG">   
                 </svg>
             </div>
             <div class="Radar">
