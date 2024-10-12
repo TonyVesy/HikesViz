@@ -44,23 +44,6 @@ html, body {
 }
 
 
-.PseudoMap {
-    /* Width and height relative to screen size */
-    width: 75vw; /* 70% of the viewport width */
-    height: 50vh;
-    margin: 0px;
-    border: 2px solid rgb(239, 239, 239); 
-}
-.PseudoPodium {
-    /* Width and height relative to screen size */
-    width: 25vw; /* 30% of the viewport width */
-    height: 50vh;
-    margin: 0px;
-    border: 2px solid rgb(239, 239, 239);
-}
-
-
-
 
 .ScatterPlot , .PseudoJitter , .PseudoRadar{
     /* Width and height relative to screen size */

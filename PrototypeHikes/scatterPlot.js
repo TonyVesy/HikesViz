@@ -110,7 +110,6 @@ function createDots(container, data){
         setSelectedHike(d); 
         console.log("Selected hike:", getSelectedHike());
         updateScatterPlotHighlight();
-        updateRadarPlot();
     });
 }
 function updateScatterPlotHighlight() {

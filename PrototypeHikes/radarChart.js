@@ -1,8 +1,8 @@
 //// The radar chart inspired by Nadieh Bremer from VisualCinnamon.com ////////////////
 import { selectedHike, getSelectedHike, setSelectedHike } from './main.js';
 
-let generalData = null;
-let oneHike = null;
+let gData = null;
+let oHike = null;
 const allAxis = ["duration_hours", "length_3d", "difficulty", "uphill", "downhill"]; // Names of each axis
 
 let svg, cfg, rScales, angleSlice, radarLine, tooltip,g;
@@ -34,7 +34,9 @@ function transformDataHike(data) {
 		};
 	});
 }
-function createRadarChart( generalData, fullData, oneHike ) {
+function createRadarChart( generalData, oneHike ) {
+
+	console.log("on construit le radar avec",generalData,oneHike)
 
    // Get the height of the SVG element
     svg = d3.select(".Radar__SVG")
@@ -55,24 +57,39 @@ function createRadarChart( generalData, fullData, oneHike ) {
 	 opacityCircles: 0.1, 	//The opacity of the circles of each blob
 	 strokeWidth: 3, 		//The width of the stroke around each blob
 	 roundStrokes: true,	//If true the area and stroke will follow a round path (cardinal-closed)
-	 color:  d3.scaleOrdinal().range(["#ffb3ba", "#ffdfba", "#ffffba", "#baffc9", "#bae1ff"])	//Color function
+	 color:  d3.scaleOrdinal().range(["#ffb3ba", "black", "#ffffba", "#baffc9", "#bae1ff"])	//Color function
 	};
 
 	
 
-    if (generalData) {generalData = transformDataCountry(generalData);}
-	if (oneHike) {oneHike = transformDataHike(oneHike);}
+    if (generalData) {gData = transformDataCountry(generalData);}
+	if (oneHike) {oHike = transformDataHike(oneHike);}
+	else {oHike = null;}
+
+	console.log("finalement on construit avec ",gData,oHike)
 
 
 	
 	var maxValues = allAxis.map(function (axis) {
     if (axis === "difficulty") {
         return 6.33; // Set a fixed value for the "difficulty" axis
-    } else {
-		
-
+    }
+    if (axis === "length_3d") {
+		return 100000; // Set a fixed value for the "length_3d" axis
+	}
+	if (axis === "duration_hours") {
+		return 48; // Set a fixed value for the "duration_hours" axis
+	}
+	if (axis === "uphill") {
+		return 2000; // Set a fixed value for the "uphill" axis
+	}
+	if (axis === "downhill") {
+		return 2000; // Set a fixed value for the "downhill" axis
+	}
+	
+	else {
         // Find the maximum value for the current axis in generalData
-        var maxGeneral = d3.max(generalData, function (d) {
+        var maxGeneral = d3.max(gData, function (d) {
             var axisData = d.values.find(function (e) {
                 return e.axis === axis;
             });
@@ -81,16 +98,15 @@ function createRadarChart( generalData, fullData, oneHike ) {
 
         // Find the maximum value for the current axis in oneHike
 		var maxFull;
-		if(oneHike){
-			if (Array.isArray(oneHike) && oneHike.length > 0) {
-				maxFull = oneHike[0].values.find(hike => hike.axis === axis).value;
-				oneHike = oneHike[0];
+		if(oHike){
+			if (Array.isArray(oHike) && oHike.length > 0) {
+				maxFull = oHike[0].values.find(hike => hike.axis === axis).value;
+				oHike = oHike[0];
 			} else {
-				maxFull = oneHike.values.find(hike => hike.axis === axis).value;
+				maxFull = oHike.values.find(hike => hike.axis === axis).value;
 			}
 		}
 		else{maxFull=0;}
-
         var maxValue = Math.max(maxGeneral, maxFull);
         return maxValue;
     }});
@@ -113,16 +129,17 @@ function createRadarChart( generalData, fullData, oneHike ) {
 	
 	//Initiate the radar chart SVG
 	
-	console.log(svg)
 	//Append a g element		
 	g = svg.append("g")
 			.attr("transform", "translate(" + (cfg.w/2 + cfg.margin.left) + "," + (cfg.h/2 + cfg.margin.top) + ")");
 	///////////// legends ////////////////
-	if (oneHike) {
+	var legendData = gData;
+	if (oHike) {
 		// Add the special hike to the general data
-		generalData.push(oneHike);
+		legendData.push(oHike[0]);
 	}
-	var legendData = generalData;
+	console.log("legendData",legendData)
+
     // Create a legend container
     var legend = svg.append("g")
         .attr("class", "legend")
@@ -143,7 +160,7 @@ function createRadarChart( generalData, fullData, oneHike ) {
         .attr("width", 18)
         .attr("height", 18)
         .style("fill", function (d, i) { 
-			if (oneHike && i === legendData.length - 1) {
+			if (oHike && i === legendData.length - 1) {
 				return "black"; // Change this to any color you prefer for the special hike
 			}
 			return cfg.color(i); });
@@ -155,7 +172,12 @@ function createRadarChart( generalData, fullData, oneHike ) {
         .attr("y", 9)
         .attr("dy", ".35em")
         .style("text-anchor", "start")
-        .text(function (d) { if(d){return d.name;} });
+        .text(function (d) {
+			if (d.name=="All") {return "All hikes average"}
+			if (d && d.name) {
+				return d.name.length > 15 ? d.name.substring(0, 15) + "..." : d.name;
+			}
+		});
 	//FILTER--------------------------
 	 //first glow
 	 var defs = svg.append("defs");
@@ -228,8 +250,6 @@ function createRadarChart( generalData, fullData, oneHike ) {
 
 	});	
 
-	console.log("est quoi g ",g)
-
 	axis.append("text")
         .attr("class", "legendRadar")
         .style("font-size", "11px")
@@ -264,7 +284,7 @@ function createRadarChart( generalData, fullData, oneHike ) {
 	   
 	//Create a wrapper for the blobs	
 	var blobWrapper = g.selectAll(".radarWrapper")
-		.data(generalData)
+		.data(gData)
 		.enter().append("g")
 		.attr("class", "radarWrapper");
 		
@@ -333,9 +353,9 @@ function createRadarChart( generalData, fullData, oneHike ) {
 		var pathTooltip = d3.select("#pathTooltip");
 
 	
-		if (oneHike) {
+		if (oHike) {
 			g.append("path")
-				.datum(oneHike.values)
+				.datum(oHike.values)
 				.enter() // Bind oneHike data
 				.attr("class", "oneHikeStroke")
 				.attr("d", radarLine) // Use the radarLine function to generate the path
@@ -359,7 +379,7 @@ function createRadarChart( generalData, fullData, oneHike ) {
 					tooltip
 						.attr('x', 0)
 						.attr('y', 0)	
-						.text(oneHike.name)
+						.text(oHike.name)
 						.transition().duration(200)
 						.style('opacity', 1);
 				})
@@ -380,7 +400,7 @@ function createRadarChart( generalData, fullData, oneHike ) {
 				});
 
 			g.selectAll(".oneHikeCircle")
-				.data(oneHike.values)
+				.data(oHike.values)
 				.enter().append("circle")
 				.attr("class", "oneHikeCircle")
 				.attr("r", cfg.dotRadius * 4) // Increase the size of the circles
@@ -447,7 +467,7 @@ function createRadarChart( generalData, fullData, oneHike ) {
 	
 	//Wrapper for the invisible circles on top
 	var blobCircleWrapper = g.selectAll(".radarCircleWrapper")
-		.data(generalData)
+		.data(gData)
 		.enter().append("g")
 		.attr("class", "radarCircleWrapper");
 		
@@ -521,78 +541,13 @@ function createRadarChart( generalData, fullData, oneHike ) {
 //-----------UPDATEEEEEEEEE----------//////
 
 function updateRadarPlot() {
-	const selectedHike = getSelectedHike();
+	const selectedHike = Array(getSelectedHike());
     if (!selectedHike) return; // Ensure selectedHike is defined
 
     // Update the radar plot with the selected hike's data
-    
-    oneHike = transformDataHike(Array(selectedHike));// Assuming selectedHike is in the correct format
-    
+	d3.select(".Radar__SVG").selectAll("*").remove()
+	createRadarChart(gData, selectedHike);
 
-	//les axes on s'en bats les couilles pour le moment
-    // Update the radar plot
-
-    
-	var radarWrapper = d3.select(".radarWrapper");
-
-	var g = svg.select("g");
-	var radarLineUpdate = g.selectAll(".oneHikeStroke")
-		.data(oneHike); // Update with the new data (oneHike.values is an array)
-
-	// Update existing path
-	console.log("radarLineUpdate",radarLineUpdate)
-
-	radarLineUpdate
-		.attr("d", radarLine) // Update the radar line with new data
-		.style("stroke-width", cfg.strokeWidth * 0.8 + "px")
-		.style("stroke", "black")
-		.style("fill", "none");
-	
-	radarLineUpdate.enter()
-		.append("path")
-		.attr("class", "oneHikeStroke")
-		.attr("d", radarLine)
-		.style("stroke-width", cfg.strokeWidth * 0.8 + "px")
-		.style("stroke", "black")
-		.style("fill", "none")
-		.on('mouseover', function (d, i) {
-			//Dim all blobs
-			d3.selectAll(".radarStroke")
-				.transition().duration(200)
-				.style("stroke-width", cfg.strokeWidth - 1 + "px")
-				.style("filter", "none");
-
-			//Bring back the hovered blob
-			d3.select(this)
-				.transition().duration(200)
-				.style("stroke-width", cfg.strokeWidth * 1.2 + "px")
-				.style("filter", "url(#glow-hover)");
-
-			tooltip
-				.attr('x', 0)
-				.attr('y', 0)
-				.text(oneHike.name)
-				.transition().duration(200)
-				.style('opacity', 1);
-		})
-	.on('mouseout', function () {
-			// Reset all blobs
-			d3.select(this)
-				.transition().duration(200)
-				.style("stroke-width", cfg.strokeWidth * 0.8 + "px")
-				.style("filter", "none");
-
-			d3.selectAll(".radarStroke")
-				.transition().duration(200)
-				.style("stroke-width", cfg.strokeWidth + "px")
-				.style("filter", "url(#glow)");
-
-			tooltip.transition().duration(200)
-				.style('opacity', 0);
-		});
-
-
-	
 }
 
 

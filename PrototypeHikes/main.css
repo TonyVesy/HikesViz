@@ -87,11 +87,17 @@ html, body {
 
 .Map {
     grid-area: map;
-    height: auto;
-    max-height: 75vh;
+    height: 100%;
+    width: 100%;
     background-color: #f9f9f9;
     border-radius: var(--border-radius);
-    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #757575;
+    font-size: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
