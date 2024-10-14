@@ -104,7 +104,7 @@ html, body {
 .Map__SVG {
     width: 100%;
     /* Make the SVG take full width of the grid cell */
-    height: auto;
+    height: 100%;
     /* Keep height proportional */
     display: block;
     margin: 0;

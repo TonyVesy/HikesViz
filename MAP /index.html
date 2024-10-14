@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spinning Globe</title>
+    <script src="https://unpkg.com/d3@7.8.2/dist/d3.min.js"></script>
+    <script src="https://unpkg.com/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        svg {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="Map">
+        <svg id="Map__SVG" width="1500" height="1000"></svg>
+    </div>
+    <script src="map.js"></script>
+    <div id="country-name" style="position: absolute; top: 10px; left: 10px; color: black; font-size: 18px;"></div>
+</body>
+</html>

@@ -2,6 +2,7 @@
 import {createScatterPlot} from './scatterPlot.js';
 import {populateCountryDropdown} from './filters.js';
 import {createRadarChart, updateRadarPlot} from './radarChart.js';
+import {initMap} from './map.js';
 
 let data;
 let globalData;
@@ -33,6 +34,7 @@ function init(){
     
     createScatterPlot(data);
     createRadarChart(averageData.slice(57,58),null);
+    initMap();
     countrySelect.addEventListener('change', () => {
       const selectedCountry = countrySelect.value;
       filterByCountry(selectedCountry);});
