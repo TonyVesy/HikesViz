@@ -2,9 +2,10 @@ import { selectedHike, setSelectedHike,getSelectedHike } from './main.js';
 import { updateRadarPlot } from './radarChart.js';
 
 
-var dots,xAxis,numTicksX,numTicksY , yAxis, x ,y, tooltip, numTicksX, numTicksY, header;
+var dots,xAxis,numTicksX,numTicksY , yAxis, x ,y, numTicksX, numTicksY, header;
 var xVar = "length_3d";
 var yVar = "moving_time_hours" 
+const tooltip = d3.select(".tooltip");
 
 
 function createScatterPlot(data) {
@@ -35,10 +36,6 @@ function createScatterPlot(data) {
       .range([svgOriginalHeight-margin.bottom-margin.top, margin.top]);
 
 
-    // Create a tooltip div that is hidden by default
-    tooltip = d3.select("body").append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0);
     
         // Add X axis
     xAxis = svg.append("g")
@@ -83,11 +80,11 @@ function createDots(container, data){
     .on("mouseover", (event, d) => {
         tooltip.transition()
             .duration(200)
-            .style("opacity", 1);
+            .style("opacity", 1)
+            .style("visibility", "visible");
         tooltip.html(d.name)
             .style("left", (event.pageX + 5) + "px")
             .style("top", (event.pageY - 28) + "px")
-            .style("color", "black");
         // Change fill color and outline on hover
         d3.select(event.currentTarget) // Select the hovered circle
         .attr("fill", "green") // Change fill color
@@ -98,11 +95,11 @@ function createDots(container, data){
     .on("mouseout", (event,d) => {
         tooltip.transition()
             .duration(500)
-            .style("opacity", 0);
+            .style("visibility", "hidden");
 
         d3.select(event.currentTarget) // Select the hovered circle
             .attr("r", d === getSelectedHike() ? 4 : 2.5) // Reset radius based on selection
-            .attr("fill", d === getSelectedHike() ? "red" : "green") // Reset fill color based on selection
+            .attr("fill", d === getSelectedHike() ? "black" : "green") // Reset fill color based on selection
             .attr("stroke", "black")    // Reset stroke color
             .attr("stroke-width", 0.01) 
     })
@@ -113,7 +110,7 @@ function createDots(container, data){
     });
 }
 function updateScatterPlotHighlight() {
-    dots.attr("fill", d => d === selectedHike ? "red" : "green")
+    dots.attr("fill", d => d === selectedHike ? "black" : "green")
         .attr("r", d => d === selectedHike ? 4 : 2.5)
         .each(function(d) {
             if (d === getSelectedHike()) {

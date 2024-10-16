@@ -11,6 +11,7 @@ let countrySelect = document.getElementById("country-filter");
 let selectedHike = null;
 let selectedCountry = "all";
 let filteredCountryData;
+let firstTenHikes;
 
 function getSelectedHike() {
   return selectedHike;
@@ -24,7 +25,12 @@ function setSelectedHike(hike) {
 
 function init(){
   d3.csv('Hikes_A_12october.csv').then(function(averageData) {
-  d3.csv('Hikes_12october.csv').then(function(CSVdata) {
+  d3.csv('Hikes_15october.csv').then(function(CSVdata) {
+    CSVdata.forEach(d => {
+      d.max_pos_lon = +d.max_pos_lon; // Convert to number
+      d.max_pos_lat = +d.max_pos_lat; // Convert to number
+  });
+    firstTenHikes = CSVdata;
     globalData = CSVdata;
     data = CSVdata;
     aData = averageData;
@@ -34,7 +40,7 @@ function init(){
     
     createScatterPlot(data);
     createRadarChart(averageData.slice(57,58),null);
-    initMap();
+    initMap(firstTenHikes);
     countrySelect.addEventListener('change', () => {
       const selectedCountry = countrySelect.value;
       filterByCountry(selectedCountry);});
